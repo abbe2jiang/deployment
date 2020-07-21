@@ -1,0 +1,5 @@
+---
+# defaults file for repository
+image_name: registry
+version: 2
+root: /opt/registry

@@ -1,0 +1,12 @@
+---
+# defaults file for docker
+setuptools: setuptools-41.0.1-py2.py3-none-any.whl
+docker_files:
+  - docker
+  - docker-containerd
+  - docker-containerd-ctr
+  - docker-containerd-shim
+  - docker-init
+  - docker-proxy
+  - docker-runc
+  - dockerd

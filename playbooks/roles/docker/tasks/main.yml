@@ -1,0 +1,55 @@
+
+- name: install docker-ce
+  copy:
+    src: "docker-ce/{{ item }}"
+    dest: "/usr/bin/{{ item }}"
+    mode: 0755
+  become: yes
+  with_items: '{{ docker_files }}'
+  when: docker_files is defined
+
+- name: Install docker as system service
+  template:
+    src: docker.service.j2
+    dest: /etc/systemd/system/docker.service
+  register: docker_install_result
+  become: yes
+
+- name: systemctl daemon-reload
+  shell: systemctl daemon-reload
+  become: yes
+  when: docker_install_result.changed
+
+- name: Enable docker service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  become: yes
+
+
+- name: copy setuptools
+  copy:
+    src: "{{ setuptools }}"
+    dest: /tmp
+  become: yes
+
+- name: install setuptools
+  shell: "pip install {{ setuptools }} >> setuptools.txt"
+  args:
+      chdir: /tmp
+      creates: setuptools.txt
+  become: yes
+
+- name: Extract docker-py
+  unarchive:
+    src: docker-py.tar.gz
+    dest: /tmp
+  become: yes
+
+- name: install docker-py
+  shell: python setup.py install >> log.txt
+  args:
+      chdir: /tmp/docker-py
+      creates: log.txt
+  become: yes

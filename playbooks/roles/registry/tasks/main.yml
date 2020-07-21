@@ -1,0 +1,20 @@
+---
+# tasks file for repository
+- name: pull registry image
+  docker_image:
+    name: "{{ image_name }}"
+    tag: "{{ version }}"
+    force: yes
+    state: present
+  become: yes
+
+- name: Start registry container
+  docker_container:
+    name: registry
+    image: "{{ image_name }}:{{ version }}"
+    volumes:
+      - '{{ root }}:/var/lib/registry'
+    network_mode: host
+    restart_policy: always
+    recreate: yes
+  become: yes

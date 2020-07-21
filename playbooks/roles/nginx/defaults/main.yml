@@ -1,0 +1,29 @@
+---
+# defaults file for nginx
+
+app_name: nginx
+image_name: registry:5000/nginx
+version: latest
+root: /opt/nginx
+
+directories:
+  - "{{root}}/config"
+  - "{{root}}/config/ssl"
+  - "{{root}}/config/conf.d"
+  - "{{root}}/log"
+
+template_files:
+  - nginx.conf
+
+copy_files:
+  - config/ssl/ssh.crt
+  - config/ssl/ssh.key
+
+
+conf_type: http
+conf_ssl: false
+conf_ssl_crt: ssl/ssh.crt
+conf_ssl_key: ssl/ssh.key
+conf_name: nginxapp
+conf_port: 80
+conf_proxy: 127.0.0.1:8080

@@ -1,0 +1,6 @@
+---
+# handlers file for docker
+
+- name: systemctl daemon-reload
+  shell: systemctl daemon-reload
+  become: yes

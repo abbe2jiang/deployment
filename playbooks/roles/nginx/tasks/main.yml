@@ -1,0 +1,52 @@
+---
+# tasks file for nginx
+- name: pull nginx image
+  docker_image:
+    name: "{{ image_name }}"
+    tag: "{{ version }}"
+    force: yes
+    state: present
+  become: yes
+
+
+- name: Create directories
+  file:
+    name: "{{ item }}"
+    state: directory
+    mode: 0777
+  become: yes
+  with_items: '{{ directories }}'
+  when: directories is defined
+
+- name: copy template files
+  template:
+    src: "{{ item|safe }}.j2"
+    dest: '{{ root }}/config/{{ item|safe }}'
+    mode: 0666
+  become: yes
+  with_items: '{{ template_files }}'
+  when: template_files is defined
+
+- name: copy files
+  copy:
+    src: "{{ item|safe }}"
+    dest: '{{ root }}/{{ item|safe }}'
+    mode: 0666
+  become: yes
+  with_items: '{{ copy_files }}'
+  when: copy_files is defined
+
+
+- name: Start container
+  docker_container:
+    name: "{{ app_name }}"
+    image: "{{ image_name }}:{{ version }}"
+    volumes:
+      - '{{ root }}/config/nginx.conf:/etc/nginx/nginx.conf'
+      - '{{ root }}/config/conf.d:/etc/nginx/conf.d'
+      - '{{ root }}/config/ssl:/etc/nginx/ssl'
+      - '{{ root }}/log:/var/log/nginx'
+    network_mode: host
+    restart_policy: always
+    recreate: yes
+  become: yes
