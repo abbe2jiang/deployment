@@ -1,0 +1,37 @@
+- name: Load nginx docker image
+  block:
+    - copy:
+        src: nginx.tar
+        dest: /tmp/nginx.tar
+    - docker_image:
+        name: nginx
+        load_path: /tmp/nginx.tar
+      become: true
+
+- name: Create nginx conf directory
+  file:
+    name: /etc/nginx/conf.d
+    state: directory
+  become: yes
+
+- name: Add reverse proxies
+  template:
+    src: http.conf.j2
+    dest: '/etc/nginx/conf.d/{{ item.server_name }}.conf'
+  become: yes
+  with_items: '{{ http_proxies }}'
+  when: http_proxies is defined
+
+- name: Start nginx container
+  docker_container:
+    name: nginx
+    image: nginx
+    volumes:
+      - '/etc/nginx/conf.d:/etc/nginx/conf.d:ro'
+    network_mode: host
+    restart_policy: always
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+      max-file: 2
+  become: yes

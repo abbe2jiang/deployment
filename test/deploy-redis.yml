@@ -1,0 +1,32 @@
+# deploy redis
+
+- hosts: redis
+  roles:
+    - role: redis
+
+
+
+# deploy redis server
+
+- hosts: redis-server1
+  roles:
+    - role: redis_server
+
+- hosts: redis-server2
+  roles:
+    - role: redis_server
+      master_host: redis-server1
+
+- hosts: redis-server3
+  roles:
+    - role: redis_server
+      master_host: redis-server1
+
+
+
+# deploy redis sentinel
+
+- hosts: redis-sentinels
+  roles:
+    - role: redis_sentinel
+      master_host: redis-server1

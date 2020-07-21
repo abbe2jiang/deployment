@@ -1,0 +1,9 @@
+---
+# Default Kibana configuration from kibana-docker.
+
+server.name: kibana
+server.host: "0"
+elasticsearch.hosts: [{% for item in esHosts %}{{ item }},{% endfor %}]
+xpack.monitoring.ui.container.elasticsearch.enabled: true
+
+xpack.reporting.encryptionKey: "a_random_string"

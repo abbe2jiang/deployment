@@ -1,0 +1,22 @@
+
+- name: Wait for port mongo to start
+  wait_for:
+    host: "{{ ansible_default_ipv4.address }}"
+    port: "{{ mongo_port }}"
+    delay: 5
+
+
+- name: copy template files
+  template:
+    src: "{{ item|safe }}.j2"
+    dest: '{{ init_root }}/{{ item|safe }}'
+  become: yes
+  with_items: '{{ template_files }}'
+  when: template_files is defined
+
+- name: init delay node
+  shell: "docker exec -it mongo sh -c 'cd /mongodb/init && sh start.sh >> delay.log' "
+  args:
+      chdir: "{{ init_root }}"
+  become: yes
+

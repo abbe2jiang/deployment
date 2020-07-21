@@ -1,0 +1,10 @@
+---
+# defaults file for grafana_init
+
+grafana_host: grafana
+grafana_port: 6100
+grafana_url: "http://{{ grafana_host }}:{{ grafana_port }}"
+grafana_user: admin
+grafana_password: admin
+
+prometheus_url: http://prometheus:9090

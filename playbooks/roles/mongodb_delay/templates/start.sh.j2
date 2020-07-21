@@ -1,0 +1,5 @@
+#!/usr/bin/sh
+cd /mongodb/init/
+master=`mongo --quiet {{ masterNodeHost }}/admin getMaster.js`
+
+mongo $master/admin delay_init.js

@@ -1,0 +1,21 @@
+---
+# defaults file for redis
+redis_name: redis-3.2.10.tar.gz
+redis_file: redis-3.2.10
+redis_root: "/opt/{{redis_file}}"
+
+app_name: redis_server
+image_name: registry:5000/redis
+version: 3.2.10
+root: /opt/redis_server
+
+master_host:
+master_port: 6379
+
+directories:
+  - "{{root}}/lib"
+  - "{{root}}/config"
+  - "{{root}}/log"
+
+template_files:
+  - redis.conf

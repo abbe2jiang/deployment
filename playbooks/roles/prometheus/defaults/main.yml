@@ -1,0 +1,8 @@
+---
+# defaults file for prometheus
+image_name: registry:5000/prometheus
+version: latest
+root: /opt/prometheus
+http_port: 9090
+config_files:
+  - prometheus.yml

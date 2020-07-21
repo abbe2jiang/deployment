@@ -1,0 +1,10 @@
+rs.initiate( {
+   _id : "{{ replSetName }}",
+   members: [
+     {% for item in replMembers %}
+      { _id: {{ loop.index}}, host: "{{ item }}" },
+     {% endfor %}
+   ]
+});
+
+rs.conf();

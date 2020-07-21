@@ -17,4 +17,8 @@
     network_mode: host
     restart_policy: always
     recreate: yes
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+      max-file: 2
   become: yes

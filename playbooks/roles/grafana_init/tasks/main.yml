@@ -1,0 +1,34 @@
+---
+# tasks file for grafana_init
+
+- name: Wait for port grafana to start
+  wait_for:
+    host: "{{ grafana_host }}"
+    port: "{{ grafana_port }}"
+    delay: 5
+
+- name: Create prometheus datasource
+  grafana_datasource:
+    grafana_url: "{{ grafana_url }}"
+    grafana_user: "{{ grafana_user }}"
+    grafana_password: "{{ grafana_password }}"
+    name: prometheus
+    url: "{{ prometheus_url }}"
+    ds_type: prometheus
+    is_default: yes
+
+- name: import grafana dashboards
+  uri:
+    url: "{{ grafana_url }}/api/dashboards/db"
+    method: POST
+    headers:
+      Content-type: "application/json; charset=UTF-8"
+    body_format: json
+    body: '{ "dashboard": {{ lookup("file", item) }}, "overwrite": true, "message": "Updated by ansible" }'
+    user: "{{ grafana_user }}"
+    password: "{{ grafana_password }}"
+    force_basic_auth: true
+    status_code: 200
+  with_fileglob:
+    - "dashboards/*.json"
+  become: yes

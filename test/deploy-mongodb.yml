@@ -1,0 +1,51 @@
+# deploy mongodb
+---
+
+- hosts: dbs
+  roles:
+    - role: mongodb
+      replSetName: enigma
+
+- hosts: db1
+  roles:
+    - role: mongodb_replset
+      replSetName: enigma
+      replMembers:
+        - "db1:27017"
+        - "db2:27017"
+        - "db3:27017"
+
+
+- hosts: db1
+ roles:
+   - role: mongodb_init
+     replSetName: enigma
+
+- hosts: db1
+ roles:
+   - role: mongodb_backup
+
+
+
+## 延迟备份
+
+- hosts: db-delay
+  roles:
+    - role: mongodb
+      replSetName: enigma
+
+- hosts: db-delay
+  roles:
+    - role: mongodb_delay
+      masterNodeHost: "db1:27017"
+      slaveDelay: 3600
+
+
+
+## 数据恢复
+
+- hosts: db-delay
+  roles:
+    - role: mongodb_restore
+      sourceHost: db-delay:27017
+      targetHosts: db1:27017,db2:27017,db3:27017

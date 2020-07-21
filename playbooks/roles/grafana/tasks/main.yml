@@ -1,0 +1,51 @@
+---
+# tasks file for grafana
+
+- name: pull grafana image
+  docker_image:
+    name: "{{ image_name }}"
+    tag: "{{ version }}"
+    force: yes
+    state: present
+  become: yes
+
+- name: Create directories
+  file:
+    name: "{{ item }}"
+    state: directory
+    owner: 472
+    group: 472
+  register: directories_result
+  become: yes
+  with_items: '{{ directories }}'
+  when: directories is defined
+
+- name: copy config
+  template:
+    src: "{{ item }}.j2"
+    dest: '{{ root }}/config/{{ item }}'
+  become: yes
+  with_items: '{{ config_files }}'
+  when: config_files is defined
+
+
+- name: Start grafana container
+  docker_container:
+    name: grafana
+    image: "{{ image_name }}:{{ version }}"
+    volumes:
+      - '{{ root }}/config/defaults.ini:/usr/share/grafana/conf/defaults.ini'
+      - '{{ root }}/data:/var/lib/grafana'
+    network_mode: host
+    restart_policy: always
+    recreate: yes
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+      max-file: 2
+  become: yes
+
+- name: grafana init
+  import_role:
+    name: grafana_init
+  when: directories_result.changed

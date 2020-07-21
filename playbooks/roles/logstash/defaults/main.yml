@@ -1,0 +1,15 @@
+---
+# defaults file for logstash
+image_name: registry:5000/logstash
+version: 7.0.1
+root: /opt/logstash
+http_port: 5044
+tcp_port: 9600
+config_files:
+  - jvm.options
+  - log4j2.properties
+  - logstash-sample.conf
+  - logstash.yml
+  - pipelines.yml
+  - startup.options
+  - stringToJson.rb

@@ -1,0 +1,37 @@
+
+- name: Create directories
+  file:
+    name: "{{ item }}"
+    state: directory
+  become: yes
+  with_items: '{{ directories }}'
+  when: directories is defined
+
+- name: copy files
+  copy:
+    src: "{{ item|safe }}"
+    dest: '{{ root }}/{{ item|safe }}'
+    mode: preserve
+  become: yes
+  with_items: '{{ copy_files }}'
+  when: copy_files is defined
+
+
+- name: Install system service
+  template:
+    src: mongodb_exporter.service.j2
+    dest: /etc/systemd/system/mongodb_exporter.service
+  register: install_result
+  become: yes
+
+- name: systemctl daemon-reload
+  shell: systemctl daemon-reload
+  become: yes
+  when: install_result.changed
+
+- name: Start service
+  service:
+    name: mongodb_exporter
+    state: started
+    enabled: yes
+  become: yes

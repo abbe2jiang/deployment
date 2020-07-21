@@ -1,0 +1,11 @@
+---
+# defaults file for mongo delay
+
+sourceHost: db_delay:27017
+targetHosts: db1:27017,db2:27017,db3:27017
+replSetName: replsetname
+
+
+databases:
+  - db
+

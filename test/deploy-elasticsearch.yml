@@ -1,0 +1,20 @@
+
+# deploy elasticsearch
+
+- hosts: elasticsearch
+  roles:
+    - elasticsearch
+
+
+# deploy elasticsearch cluster
+
+- hosts: elasticsearchs
+  roles:
+    - role: elasticsearch
+      masterNodes:    # es 所在机器主机名
+        - elasticsearch
+      nodeHosts:
+        - elasticsearch1
+        - elasticsearch2
+        - elasticsearch3
+

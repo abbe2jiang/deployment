@@ -1,0 +1,9 @@
+authHost: http://localhost:6061/auth
+clientID: kibana
+clientSecret: kibana
+scopes: userInfo
+redirectURL: http://localhost:5602/callback
+userInfoUrl: /user/me
+port: 5602
+kibanaHost: localhost
+kibanaPort: 5601

@@ -1,0 +1,11 @@
+---
+# defaults file for mongodb_backup
+root: /opt/mongodb/dump
+shell: cron/mongodb_backup.sh
+directories:
+  - "{{root}}/data"
+  - "{{root}}/cron"
+  - "{{root}}/log"
+
+template_files:
+  - "{{ shell }}"

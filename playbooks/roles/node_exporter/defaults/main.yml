@@ -1,0 +1,9 @@
+---
+# defaults file for node_exporter
+root: /opt/node_exporter
+
+directories:
+  - "{{ root }}"
+
+copy_files:
+  - node_exporter

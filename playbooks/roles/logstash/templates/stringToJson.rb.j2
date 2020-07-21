@@ -1,0 +1,56 @@
+# the value of `params` is the value of the hash passed to `script_params`
+# in the logstash configuration
+def register(params)
+    # @drop_percentage = params["percentage"]
+end
+
+# the filter method receives an event and must return a list of events.
+# Dropping an event means not including it in the return array,
+# while creating new ones only requires you to add a new instance of
+# LogStash::Event to the returned array
+def filter(event)
+    message = event.get('message')
+    m=/.*\[ADMIN\]\[IM\](.*)\[MI\].*/.match(message)
+    if m!=nil
+        require 'json'
+        json = JSON.parse(m[1])
+        json.each{|key,value| event.set(key,value) if key!='__obj'}
+        if json['__obj'].instance_of? Hash
+            json['__obj'].each{|key,value| event.set(key,value)}
+        else
+            event.set('__obj',json['__obj'])
+        end
+
+        cp = event.get('__cp')
+        if cp['__action'] == nil
+            cp['__action'] = 'index'
+        end
+        if cp['__indexPartition'] == nil
+            cp['__indexPartition'] = 'partition'
+        end
+        event.set("__cp",cp)
+
+        event.set('__imtime', event.get('__cp')['__time'])
+
+        return [event]
+    else
+        event.set('__type','OTHER')
+        event.set('logcontent',message)
+        source = event.get('log')['file']['path']
+        items = source.split(/\//)
+        sign = 'common'
+        if items.length == 8
+            sign = items[5]
+            sign2 = items[6]
+            event.set('__sign', sign2)
+        end
+        event.set('__sign',sign)
+
+        m=/(^\d{1,2}\-\d{1,2}\s+\d{2}:\d{2}:\d{2}\.\d{3}).*/.match(message)
+        if m!=nil
+            event.set('__imtime', m[1].gsub(/-/, ' '))
+        end
+
+        return [event]
+    end
+end

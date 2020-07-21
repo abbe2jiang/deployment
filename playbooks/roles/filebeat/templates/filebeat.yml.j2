@@ -1,0 +1,60 @@
+#name: filebeat-admin
+#monitoring:
+#  enabled: true
+#  cluster_uuid: h3A4K9gGRVGNWKYs7c1KlA
+#  elasticsearch:
+#    hosts: ["http://elasticsearch1:9200","http://elasticsearch2:9200","http://elasticsearch3:9200"]
+
+filebeat.config:
+#  prospectors:
+#    path: ${path.config}/prospectors.d/*.yml
+#    reload.enabled: false
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
+
+processors:
+- add_cloud_metadata:
+
+
+filebeat.inputs:
+
+# Each - is an input. Most options can be set at the input level, so
+# you can use different inputs for various configurations.
+# Below are the input specific configurations.
+
+- type: log
+
+  # Change to true to enable this input configuration.
+  enabled: true
+
+  # Paths that should be crawled and fetched. Glob based paths.
+  paths:
+    {% for item in log_files %}
+    - /usr/share/filebeat/logs/{{ log_sign }}/{{ log_sign2 }}/{{ item }}
+    {% endfor %}
+
+  ### Multiline options
+
+  # Multiline can be used for log messages spanning multiple lines. This is common
+  # for Java Stack Traces or C-Line Continuation
+
+  # The regexp Pattern that has to be matched. The example pattern matches all lines starting with [
+  multiline.pattern: ^\d{1,2}\-\d{1,2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s+
+
+  # Defines if the pattern set under pattern should be negated or not. Default is false.
+  multiline.negate: true
+
+  # Match can be set to "after" or "before". It is used to define if lines should be append to a pattern
+  # that was (not) matched before or after or as long as a pattern is not matched based on negate.
+  # Note: After is the equivalent to previous and before is the equivalent to to next in Logstash
+  multiline.match: after
+
+output.logstash:
+  # The Logstash hosts
+  hosts: ["logstash:5044"]
+
+#output.elasticsearch:
+#  hosts: ['elasticsearch:9200']
+#  username: elastic
+#  password: changeme

@@ -1,0 +1,14 @@
+---
+# defaults file for grafana
+image_name: registry:5000/grafana
+version: 6.5.2
+root: /opt/grafana
+http_port: 6100
+domain: git.a
+authHost: http://auth/auth
+directories:
+  - "{{root}}/config"
+  - "{{root}}/data"
+
+config_files:
+  - defaults.ini

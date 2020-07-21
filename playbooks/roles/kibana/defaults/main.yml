@@ -1,0 +1,16 @@
+---
+# defaults file for kibana
+
+image_name: registry:5000/kibana
+version: 7.4.1
+root: /opt/kibana
+proxy_port: 5602
+authHost: http://portal:6060/auth
+authCallbackUrl: http://47.92.36.110:6500/callback
+esHosts:
+  - http://elasticsearch1:9200
+  - http://elasticsearch2:9200
+  - http://elasticsearch3:9200
+config_files:
+  - kibana.yml
+  - proxy.yml

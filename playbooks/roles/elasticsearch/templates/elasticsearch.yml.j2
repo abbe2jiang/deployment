@@ -1,0 +1,17 @@
+cluster.name: "elasticsearch"
+network.host: {{ ansible_default_ipv4.address }}
+node.name: {{ ansible_nodename }}
+path.repo: /usr/share/elasticsearch/data/backup
+# minimum_master_nodes need to be explicitly set when bound on a public IP
+# set to 1 to allow single node clusters
+# Details: https://github.com/elastic/elasticsearch/pull/17288
+
+{% if nodeHosts %}
+discovery.seed_hosts: {% for item in nodeHosts %}{{ item }},{% endfor %}
+
+cluster.initial_master_nodes: {% for item in masterNodes %}{{ item }},{% endfor %}
+
+{% else %}
+discovery.type: single-node
+{% endif %}
+

@@ -1,0 +1,88 @@
+---
+# tasks file for elasticsearch
+
+- name: pull router image
+  docker_image:
+    name: "{{ image_name }}"
+    tag: "{{ version }}"
+    force: yes
+    state: present
+  become: yes
+
+
+- name: Create elasticsearch config directory
+  file:
+    name: "{{ root }}/config"
+    state: directory
+    owner: 1000
+    group: 1000
+  become: yes
+
+- name: copy elasticsearch.yml
+  template:
+    src: elasticsearch.yml.j2
+    dest: '{{ root }}/config/elasticsearch.yml'
+  become: yes
+  
+- name: copy jvm.options
+  template:
+    src: jvm.options.j2
+    dest: '{{ root }}/config/jvm.options'
+  become: yes
+
+- name: Create elasticsearch data directory
+  file:
+    name: "{{ root }}/data"
+    state: directory
+    owner: 1000
+    group: 1000
+  become: yes
+
+- name: Create elasticsearch logs directory
+  file:
+    name: "{{ root }}/logs"
+    state: directory
+    owner: 1000
+    group: 1000
+  become: yes
+
+
+- name: set max_map_count
+  sysctl:
+    name: vm.max_map_count
+    value: 262144
+    state: present
+    reload: yes
+  become: yes
+
+- pam_limits:
+    domain: '*'
+    limit_type: soft
+    limit_item: nofile
+    value: 65535
+  become: yes
+
+- pam_limits:
+    domain: '*'
+    limit_type: hard
+    limit_item: nofile
+    value: 65535
+  become: yes
+
+- name: Start elasticsearch container
+  docker_container:
+    name: elasticsearch
+    image: "{{ image_name }}:{{ version }}"
+    volumes:
+      - '{{ root }}/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml'
+      - '{{ root }}/config/jvm.options:/usr/share/elasticsearch/config/jvm.options'
+      - '{{ root }}/data:/usr/share/elasticsearch/data'
+      - '{{ root }}/logs:/usr/share/elasticsearch/logs'
+    network_mode: host
+    restart_policy: always
+    recreate: yes
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+      max-file: 2
+  become: yes

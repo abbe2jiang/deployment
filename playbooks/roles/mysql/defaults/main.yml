@@ -1,0 +1,19 @@
+---
+# defaults file for mysql
+
+image_name: registry:5000/mysql
+version: 5.6
+root: /opt/mysql
+port: 3306
+root_password: root
+init_db: init-db
+directories:
+  - "{{root}}"
+  - "{{root}}/{{init_db}}"
+  - "{{root}}/config"
+
+copy_dirs:
+  - "{{init_db}}"
+
+template_files:
+  - mysqld.cnf

@@ -1,0 +1,14 @@
+---
+# defaults file for mongo delay
+
+masterNodeHost: db1:27017
+slaveDelay: 3600
+mongo_port: 27017
+
+root: /opt/mongodb
+init_root: "{{ root }}/init"
+
+template_files:
+  - delay_init.js
+  - getMaster.js
+  - start.sh

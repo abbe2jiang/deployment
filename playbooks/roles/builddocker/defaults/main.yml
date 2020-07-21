@@ -1,0 +1,22 @@
+---
+# defaults file for builddocker
+
+root: /opt/builddocker
+docker_root: ../../../docker
+#images:
+#  - name: jdk
+#    repository: jdk
+#    tag: 10.0.2
+#    push: no
+#
+#images_pull:
+#  - name: consul
+#    repository: registry:5000/consul
+#    tag: latest
+#    push: yes
+
+#images_load:
+#  - name: imageload
+#    repository: registry:5000/imageload
+#    tag: latest
+#    push: yes

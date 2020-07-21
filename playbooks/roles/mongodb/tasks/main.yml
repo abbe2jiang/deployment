@@ -1,0 +1,47 @@
+
+- name: pull mongo image
+  docker_image:
+    name: "{{ image_name }}"
+    tag: "{{ version }}"
+    force: yes
+    state: present
+  become: yes
+
+- name: Create directories
+  file:
+    name: "{{ item }}"
+    state: directory
+  register: directories_result
+  become: yes
+  with_items: '{{ directories }}'
+  when: directories is defined
+
+- name: copy template files
+  template:
+    src: "{{ item|safe }}.j2"
+    dest: '{{ root }}/config/{{ item|safe }}'
+  become: yes
+  with_items: '{{ template_files }}'
+  when: template_files is defined
+
+
+
+- name: Start container
+  docker_container:
+    name: "{{ app_name }}"
+    image: "{{ image_name }}:{{ version }}"
+    working_dir: /mongodb
+    volumes:
+      - '{{ root }}/config/mongod.conf:/mongodb/mongod.conf'
+      - '{{ root }}/data:/mongodb/data'
+      - '{{ root }}/log:/mongodb/log'
+      - '{{ init_root }}:/mongodb/init'
+      - '{{ dump_root }}:/mongodb/dump'
+    network_mode: host
+    restart_policy: always
+    recreate: yes
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+      max-file: 2
+  become: yes

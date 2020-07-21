@@ -1,0 +1,49 @@
+- name: pull redis image
+  docker_image:
+    name: "{{ image_name }}"
+    tag: "{{ version }}"
+    force: yes
+    state: present
+  become: yes
+
+- name: Create directories
+  file:
+    name: "{{ item }}"
+    state: directory
+  register: directories_result
+  become: yes
+  with_items: '{{ directories }}'
+  when: directories is defined
+
+- name: copy template files
+  template:
+    src: "{{ item|safe }}.j2"
+    dest: '{{ root }}/config/{{ item|safe }}'
+  become: yes
+  with_items: '{{ template_files }}'
+  when: template_files is defined
+
+
+
+- name: Start container
+  docker_container:
+    name: "{{ app_name }}"
+    image: "{{ image_name }}:{{ version }}"
+    working_dir: /data
+    volumes:
+      - '{{ root }}/config/redis.conf:/data/redis.conf'
+      - '{{ root }}/lib:/data/lib'
+      - '{{ root }}/log:/data/log'
+    network_mode: host
+    restart_policy: always
+    recreate: yes
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+      max-file: 2
+  become: yes
+
+#- name: Verify redis installation
+#  command: "{{ redis_root }}/bin/redis-cli -h {{ ansible_default_ipv4.address }} ping"
+#  register: redis_ping_result
+#  failed_when: redis_ping_result.stdout != 'PONG'

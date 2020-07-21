@@ -1,0 +1,4 @@
+#!/usr/bin/sh
+{% for item in init_dbs %}
+mongorestore --host {{replSetName}}/{{ ansible_default_ipv4.address }} --port {{ mongo_port }} -d {{item}} --drop  /mongodb/init/{{ item }}
+{% endfor %}

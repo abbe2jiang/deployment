@@ -1,0 +1,50 @@
+---
+# tasks file for kibana
+
+- name: pull kibana image
+  docker_image:
+    name: "{{ image_name }}"
+    tag: "{{ version }}"
+    force: yes
+    state: present
+  become: yes
+
+
+- name: Create kibana config directory
+  file:
+    name: "{{ root }}/config"
+    state: directory
+  become: yes
+
+- name: Create kibana logs directory
+  file:
+    name: "{{ root }}/logs"
+    state: directory
+    owner: 1000
+    group: 1000
+  become: yes
+
+- name: copy config
+  template:
+    src: "{{ item }}.j2"
+    dest: '{{ root }}/config/{{ item }}'
+  become: yes
+  with_items: '{{ config_files }}'
+  when: config_files is defined
+
+
+- name: Start kibana_proxy container
+  docker_container:
+    name: kibana_proxy
+    image: "{{ image_name }}:{{ version }}"
+    volumes:
+      - '{{ root }}/config:/usr/share/kibana/config'
+      - '{{ root }}/logs:/usr/share/kibana/logs'
+    network_mode: host
+    restart_policy: always
+    recreate: yes
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+      max-file: 2
+  become: yes

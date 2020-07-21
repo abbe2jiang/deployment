@@ -1,0 +1,9 @@
+---
+# defaults file for redis_exporter
+root: /opt/redis_exporter
+
+directories:
+  - "{{ root }}"
+
+copy_files:
+  - redis_exporter

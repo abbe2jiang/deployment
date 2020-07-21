@@ -1,0 +1,25 @@
+# deploy consul
+
+- hosts: consul
+  roles:
+    - consul
+
+
+# deploy consul server
+
+- hosts: consul1
+  roles:
+    - role: consul_server
+
+- hosts: consul2
+  roles:
+    - role: consul_server
+      serverNodes:
+        - consul1:8351
+
+- hosts: consul3
+  roles:
+    - role: consul_server
+      serverNodes:
+        - consul1:8351
+        

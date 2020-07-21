@@ -1,0 +1,39 @@
+
+- name: Wait for port mongo to start
+  wait_for:
+    host: "{{ ansible_default_ipv4.address }}"
+    port: "{{ mongo_port }}"
+    delay: 5
+
+- name: Create init root directory
+  file:
+    name: "{{ init_root }}"
+    state: directory
+  become: yes
+
+- name: Extract init data
+  unarchive:
+    src: "{{ item }}.tar.gz"
+    dest: "{{ init_root }}"
+  become: yes
+  with_items: '{{ init_dbs }}'
+
+- name: copy start.sh
+  template:
+    src: start.sh.j2
+    dest: "{{ init_root }}/start.sh"
+  become: yes
+
+
+- name: Wait for port mongo to start
+  wait_for:
+    host: "{{ ansible_default_ipv4.address }}"
+    port: "{{ mongo_port }}"
+    delay: 5
+
+- name: init data
+  shell: "docker exec -it mongo sh -c 'cd /mongodb/init && sh start.sh >> log2.txt' "
+  args:
+      chdir: "{{ init_root }}"
+      creates: log2.txt
+  become: yes

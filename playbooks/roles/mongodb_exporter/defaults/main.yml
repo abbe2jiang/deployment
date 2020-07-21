@@ -1,0 +1,9 @@
+---
+# defaults file for mongodb_exporter
+root: /opt/mongodb_exporter
+
+directories:
+  - "{{ root }}"
+
+copy_files:
+  - mongodb_exporter

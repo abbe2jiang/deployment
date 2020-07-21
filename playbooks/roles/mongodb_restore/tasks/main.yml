@@ -1,0 +1,14 @@
+
+
+
+- name: dump databases
+  shell: "docker exec -it mongo sh -c 'cd /mongodb/dump && mongodump --forceTableScan --host {{sourceHost}}  -d {{item}} -o {{item}} >> dump_{{item}}.log' "
+  with_items: "{{ databases }}"
+  when: databases is defined
+  become: yes
+
+- name: restore databases
+  shell: "docker exec -it mongo sh -c 'cd /mongodb/dump && mongorestore --drop --host {{replSetName}}/{{targetHosts}} -d {{item}} {{item}}/{{item}} >> restore_{{item}}.log' "
+  with_items: "{{ databases }}"
+  when: databases is defined
+  become: yes

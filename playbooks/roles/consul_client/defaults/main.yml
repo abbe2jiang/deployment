@@ -1,0 +1,17 @@
+---
+# defaults file for monitor
+
+app_name: consul_client
+image_name: registry:5000/consul
+version: latest
+root: /opt/consul_client
+http_port: 8500
+serf_lan_port: 8301
+serverNodes: []
+directories:
+  - "{{root}}/config"
+  - "{{root}}/data"
+  - "{{root}}/log"
+
+template_files:
+  - consul.hcl

@@ -1,0 +1,84 @@
+# build docker builddocker
+---
+
+- hosts: registry
+  roles:
+    - role: builddocker
+      images_pull:
+        - name: consul
+          repository: registry:5000/consul
+          tag: latest
+          push: yes
+
+        - name: nginx
+          repository: registry:5000/nginx
+          tag: latest
+          push: yes
+
+        - name: elasticsearch
+          repository: registry:5000/elasticsearch
+          tag: 7.4.1
+          push: yes
+
+        - name: elastic/filebeat
+          repository: registry:5000/filebeat
+          tag: 7.4.1
+          push: yes
+
+        - name: logstash
+          repository: registry:5000/logstash
+          tag: 6.4.1
+          push: yes
+
+        - name: prom/prometheus
+          repository: registry:5000/prometheus
+          tag: latest
+          push: yes
+
+        - name: grafana/grafana
+          repository: registry:5000/grafana
+          tag: 6.5.2
+          push: yes
+
+        - name: mysql
+          repository: registry:5000/mysql
+          tag: 5.6
+          push: yes
+          
+      images:
+        - name: jdk
+          repository: jdk
+          tag: 10.0.2
+          push: no
+
+        - name: mongo
+          repository: registry:5000/mongo
+          tag: 4.0.10
+          push: yes
+
+        - name: redis
+          repository: registry:5000/redis
+          tag: 3.2.10
+          push: yes
+
+        - name: redis_sentinel
+          repository: registry:5000/redis_sentinel
+          tag: 3.2.10
+          push: yes
+
+        - name: kibana
+          repository: registry:5000/kibana
+          tag: 7.4.1
+          push: yes
+
+        - name: javaprogram
+          repository: registry:5000/javaprogram
+          tag: latest
+          push: yes
+
+      images_load:
+        - name: imageload
+          repository: registry:5000/imageload
+          tag: latest
+          push: yes
+

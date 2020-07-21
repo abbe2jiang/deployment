@@ -1,0 +1,51 @@
+---
+# tasks file for filebeat
+
+- name: pull filebeat image
+  docker_image:
+    name: "{{ image_name }}"
+    tag: "{{ version }}"
+    force: yes
+    state: present
+  become: yes
+
+- name: Create directories
+  file:
+    name: "{{ item }}"
+    state: directory
+  become: yes
+  with_items: '{{ directories }}'
+  when: directories is defined
+
+- name: copy template files
+  template:
+    src: "{{ item|safe }}.j2"
+    dest: '{{ root }}/config/{{ item|safe }}'
+  become: yes
+  with_items: '{{ template_files }}'
+  when: template_files is defined
+
+
+- name: create log link
+  file:
+    src: "{{ log_dir }}"
+    dest: '{{ root }}/log/{{ log_sign }}/{{ log_sign2 }}'
+    state: link
+    force: yes
+  become: yes
+
+- name: Start filebeat container
+  docker_container:
+    name: "{{ app_name }}"
+    image: "{{ image_name }}:{{ version }}"
+    volumes:
+      - '{{ root }}/config/filebeat.yml:/usr/share/filebeat/filebeat.yml'
+      - '{{ log_dir }}:/usr/share/filebeat/logs/{{ log_sign }}/{{ log_sign2 }}'
+    network_mode: host
+    restart_policy: always
+    recreate: yes
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+      max-file: 2
+  become: yes

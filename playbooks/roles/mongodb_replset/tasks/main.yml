@@ -1,0 +1,19 @@
+
+- name: Wait for port mongo to start
+  wait_for:
+    host: "{{ ansible_default_ipv4.address }}"
+    port: "{{ mongo_port }}"
+    delay: 5
+
+- name: copy replset_init.js
+  template:
+    src: replset_init.js.j2
+    dest: "{{ init_root }}/replset_init.js"
+  become: yes
+
+- name: init replset
+  shell: "docker exec -it mongo sh -c 'cd /mongodb/init && mongo {{ ansible_default_ipv4.address }}:{{mongo_port}}/admin replset_init.js >> log.txt' "
+  args:
+      chdir: "{{ init_root }}"
+      creates: log.txt
+  become: yes

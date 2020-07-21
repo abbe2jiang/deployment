@@ -1,0 +1,11 @@
+[Unit]
+Description=mongodb exporter
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart={{ root }}/mongodb_exporter --web.listen-address=":6112" --mongodb.uri=mongodb://db1,db2,db3 --mongodb.collect.replset=true --mongodb.collect.oplog=true
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

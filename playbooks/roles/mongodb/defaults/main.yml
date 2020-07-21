@@ -1,0 +1,24 @@
+---
+# defaults file for mongo
+
+app_name: mongo
+image_name: registry:5000/mongo
+version: 4.0.10
+root: /opt/mongodb
+mongo_port: 27017
+replSetName: replsetname
+
+directories:
+  - "{{root}}/data"
+  - "{{root}}/config"
+  - "{{root}}/log"
+
+template_files:
+  - mongod.conf
+
+
+init_root: "{{ root }}/init"
+init_dbs:
+  - initdb
+
+dump_root: "{{ root }}/dump"

@@ -1,0 +1,40 @@
+---
+# tasks file for logstash
+
+- name: pull logstash image
+  docker_image:
+    name: "{{ image_name }}"
+    tag: "{{ version }}"
+    force: yes
+    state: present
+  become: yes
+
+- name: Create logstash config directory
+  file:
+    name: "{{ root }}/config"
+    state: directory
+  become: yes
+
+- name: copy config
+  template:
+    src: "{{ item }}.j2"
+    dest: '{{ root }}/config/{{ item }}'
+  become: yes
+  with_items: '{{ config_files }}'
+  when: config_files is defined
+
+
+- name: Start logstash container
+  docker_container:
+    name: logstash
+    image: "{{ image_name }}:{{ version }}"
+    volumes:
+      - '{{ root }}/config:/usr/share/logstash/config'
+    network_mode: host
+    restart_policy: always
+    recreate: yes
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+      max-file: 2
+  become: yes

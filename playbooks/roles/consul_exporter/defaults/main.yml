@@ -1,0 +1,9 @@
+---
+# defaults file for consul_exporter
+root: /opt/consul_exporter
+
+directories:
+  - "{{ root }}"
+
+copy_files:
+  - consul_exporter

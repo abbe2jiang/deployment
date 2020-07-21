@@ -1,0 +1,27 @@
+---
+# tasks file for mongodb_backup
+
+- name: Create directories
+  file:
+    name: "{{ item }}"
+    state: directory
+  become: yes
+  with_items: '{{ directories }}'
+  when: directories is defined
+
+- name: copy template files
+  template:
+    src: "{{ item|safe }}.j2"
+    dest: '{{ root }}/{{ item|safe }}'
+  become: yes
+  with_items: '{{ template_files }}'
+  when: template_files is defined
+
+- name: backup mongodb data at 1:00
+  cron:
+    name: "mongodb backup"
+    minute: "00"
+    hour: "01"
+    job: "docker exec -i mongo sh -c 'sh /mongodb/dump/{{ shell }} >> /mongodb/dump/log/log.txt 2>&1'"
+  become: yes
+

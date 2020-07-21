@@ -1,0 +1,8 @@
+---
+# defaults file for elasticsearch
+image_name: registry:5000/elasticsearch
+version: 7.4.1
+root: /opt/elasticsearch
+
+nodeHosts: []
+masterNodes: []

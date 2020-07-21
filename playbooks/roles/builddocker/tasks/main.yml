@@ -1,0 +1,73 @@
+---
+# tasks file for builddocker
+
+- name: pull  image and push it to local registry
+  docker_image:
+     name: "{{ item.name }}:{{ item.tag }}"
+     repository: "{{ item.repository }}:{{ item.tag }}"
+     push: "{{ item.push }}"
+  become: yes
+  with_items: '{{ images_pull }}'
+  when: images_pull is defined
+
+#########################################
+
+- name: Create directories
+  file:
+    name: "{{ root }}/{{ item.name }}"
+    state: directory
+  become: yes
+  with_items: '{{ images }}'
+  when: images is defined
+
+- name: copy files
+  synchronize:
+    src: "{{ docker_root }}/{{ item.name }}/"
+    dest: '{{ root }}/{{ item.name }}/'
+    dirs: yes
+  become: yes
+  with_items: '{{ images }}'
+  when: images is defined
+
+- name: Build  image and push it to local registry
+  docker_image:
+    name: "{{ item.repository }}:{{ item.tag }}"
+    path: "{{ root }}/{{ item.name }}"
+    push: "{{ item.push }}"
+    pull: no
+    force: yes
+  become: yes
+  with_items: '{{ images }}'
+  when: images is defined
+
+################################################
+- name: Create directories
+  file:
+    name: "{{ root }}/{{ item.name }}"
+    state: directory
+  become: yes
+  with_items: '{{ images_load }}'
+  when: images_load is defined
+
+- name: copy images
+  synchronize:
+    src: "{{ docker_root }}/{{ item.name }}/"
+    dest: '{{ root }}/{{ item.name }}/'
+    dirs: yes
+  become: yes
+  with_items: '{{ images_load }}'
+  when: images_load is defined
+
+
+- name: load  image and push it to local registry
+  docker_image:
+    name: "{{ item.name  }}:{{ item.tag }}"
+    repository: "{{ item.repository }}:{{ item.tag }}"
+    load_path: "{{ root }}/{{ item.name }}/{{ item.name }}.tar"
+    source: load
+    push: "{{ item.push }}"
+    pull: no
+    force: yes
+  become: yes
+  with_items: '{{ images_load }}'
+  when: images_load is defined

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+root=/mongodb/dump/data
+cd $root
+time=`date +%Y-%m-%dT%H-%M-%S`
+echo "mongodump $time"
+mongodump --host {{ ansible_default_ipv4.address }} -d replsetname -o $time
+tar -cvzf $time.tar.gz $time
+rm -rf $root/$time
+find $root -mtime 5| xargs rm

@@ -1,0 +1,16 @@
+node_name = "client-{{ ansible_nodename }}"
+datacenter = "dc1"
+data_dir = "/consul/data"
+bind_addr = "{{ ansible_default_ipv4.address }}"
+client_addr = "0.0.0.0"
+server = false
+ports {
+    http = {{http_port}},
+    serf_lan = {{serf_lan_port}},
+    dns = 8600,
+    grpc = 8502
+}
+start_join = [{% for node in serverNodes %}"{{node}}",{% endfor %}]
+ui = false
+log_level = "INFO"
+log_file = "/consul/log/consul.log"

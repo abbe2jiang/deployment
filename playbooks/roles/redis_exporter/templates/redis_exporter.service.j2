@@ -1,0 +1,11 @@
+[Unit]
+Description=redis exporter
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart={{ root }}/redis_exporter --web.listen-address ":6113" --redis.addr "redis://cache:6379"
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

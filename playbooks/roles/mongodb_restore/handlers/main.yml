@@ -1,0 +1,15 @@
+---
+# handlers file for mongodb
+
+- name: Extract init.tar.gz
+  unarchive:
+    src: Extract init.tar.gz
+    dest: '{{ root }}'
+  become: yes
+
+- name: init
+  shell: sh start.sh >> .init.log
+  args:
+      chdir: '{{ root }}/init'
+      creates: .init.log
+  become: yes

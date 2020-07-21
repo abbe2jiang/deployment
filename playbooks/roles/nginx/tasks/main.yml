@@ -13,7 +13,6 @@
   file:
     name: "{{ item }}"
     state: directory
-    mode: 0777
   become: yes
   with_items: '{{ directories }}'
   when: directories is defined
@@ -22,7 +21,6 @@
   template:
     src: "{{ item|safe }}.j2"
     dest: '{{ root }}/config/{{ item|safe }}'
-    mode: 0666
   become: yes
   with_items: '{{ template_files }}'
   when: template_files is defined
@@ -31,7 +29,6 @@
   copy:
     src: "{{ item|safe }}"
     dest: '{{ root }}/{{ item|safe }}'
-    mode: 0666
   become: yes
   with_items: '{{ copy_files }}'
   when: copy_files is defined
@@ -49,4 +46,8 @@
     network_mode: host
     restart_policy: always
     recreate: yes
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+      max-file: 2
   become: yes

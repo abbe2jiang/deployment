@@ -1,0 +1,55 @@
+---
+# tasks file for mysql
+
+- name: pull mysql image
+  docker_image:
+    name: "{{ image_name }}"
+    tag: "{{ version }}"
+    force: yes
+    state: present
+  become: yes
+
+- name: Create directories
+  file:
+    name: "{{ item }}"
+    state: directory
+  become: yes
+  with_items: '{{ directories }}'
+  when: directories is defined
+
+
+- name: copy directories
+  synchronize:
+    src: "{{ item }}/"
+    dest: '{{ root }}/{{ item }}/'
+    dirs: yes
+  with_items: '{{ copy_dirs }}'
+  become: yes
+
+- name: copy template files
+  template:
+    src: "{{ item|safe }}.j2"
+    dest: '{{ root }}/config/{{ item|safe }}'
+  become: yes
+  with_items: '{{ template_files }}'
+  when: template_files is defined
+
+- name: Start mysql container
+  docker_container:
+    name: mysql
+    image: "{{ image_name }}:{{ version }}"
+    volumes:
+      - '{{ root }}/{{init_db}}:/docker-entrypoint-initdb.d'
+      - '{{ root }}/config/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf'
+    env:
+      MYSQL_ROOT_PASSWORD: "{{ root_password }}"
+#    ports:
+#      - "{{port}}:3306"
+    restart_policy: always
+    network_mode: host
+    state: started
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+      max-file: "2"
+  become: yes

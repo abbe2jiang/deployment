@@ -1,0 +1,82 @@
+# Sample Logstash configuration for creating a simple
+# Beats -> Logstash -> Elasticsearch pipeline.
+
+input {
+  beats {
+    client_inactivity_timeout => 1200
+    port => 5044
+  }
+  syslog {
+    port => 5000
+  }
+}
+
+filter {
+  ruby {
+    path => "config/stringToJson.rb"
+    remove_field => ['host','beat','log','input','prospector','agent','cloud']
+  }
+  if [message] !~ /.*\[ADMIN\]\[IM\](.*)\[MI\].*/ {
+    grok {
+      match => { "message" => "%{LOGLEVEL:level}"}
+    }
+  }
+  mutate {
+    remove_field => ['message']
+  }
+
+ if '_rubyexception' not in [tags] {
+    if [__type] == "INDEX" {
+      date {
+          match => [ "__imtime", "UNIX_MS", "M d HH:mm:ss.SSS", "ISO8601" ]
+          target => "@imtimestamp"
+      }
+    } else {
+      date {
+        match => [ "__imtime", "M d HH:mm:ss.SSS", "ISO8601"]
+        target => "@imtimestamp"
+        timezone => "Asia/Shanghai"
+      }
+    }
+ }
+}
+
+output {
+  if '_rubyexception'  in [tags] {
+    elasticsearch {
+      hosts => ["http://elasticsearch1:9200","http://elasticsearch2:9200","http://elasticsearch3:9200"]
+      index => "imerror-%{+YYYY-MM-dd}"
+    }
+
+  } else if [__type] == "INDEX" {
+    if [__cp][__action] == "index" {
+        elasticsearch {
+          hosts => ["http://elasticsearch1:9200","http://elasticsearch2:9200","http://elasticsearch3:9200"]
+          index => "%{[__sign]}-obj"
+        }
+    } else if [__cp][__action] == "update" {
+        elasticsearch {
+          hosts => ["http://elasticsearch1:9200","http://elasticsearch2:9200","http://elasticsearch3:9200"]
+          index => "%{[__sign]}-obj"
+          document_id => "%{[__cp][__id]}"
+          doc_as_upsert => true
+          action => "update"
+        }
+    } else {
+        elasticsearch {
+          hosts => ["http://elasticsearch1:9200","http://elasticsearch2:9200","http://elasticsearch3:9200"]
+          index => "%{[__sign]}-obj"
+          document_id => "%{[__cp][__id]}"
+          action => "%{[__cp][__action]}"
+        }
+    }
+  }else {
+    elasticsearch {
+      hosts => ["http://elasticsearch1:9200","http://elasticsearch2:9200","http://elasticsearch3:9200"]
+      index => "%{[__sign]}-log"
+    }
+  }
+
+ # stdout {}
+
+}

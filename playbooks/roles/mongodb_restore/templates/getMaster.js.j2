@@ -1,0 +1,7 @@
+var members = rs.status().members;
+for(var i=0;i<members.length;i++){
+    if(members[i].stateStr=="PRIMARY"){
+        masterHost = members[i].name;
+        print(masterHost);
+    }
+}
