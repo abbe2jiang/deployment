@@ -18,3 +18,16 @@
         - elasticsearch2
         - elasticsearch3
 
+
+# deploy logstash
+
+- hosts: logstash
+  roles:
+    - logstash
+
+
+# deploy kibana
+
+- hosts: kibana
+  roles:
+    - kibana

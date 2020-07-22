@@ -1,0 +1,52 @@
+# deploy javaprogram
+---
+
+- hosts: registry
+  roles:
+    - role: builddocker
+      images:
+        - name: admin
+          repository: registry:5000/javaprogram
+          tag: "{{ app_tag }}"
+          push: yes
+
+
+- hosts: javaprogram
+  roles:
+    - role: javaprogram
+      root: "/opt/javaprogram"
+      version: "{{ app_tag }}"
+
+- hosts: javaprogram
+ roles:
+   - role: filebeat
+     app_name: filebeat-javaprogram
+     root: /opt/filebeat-javaprogram
+     log_dir: "/opt/javaprogram/log"
+     log_sign: "javaprogram-{{ ansible_nodename }}"
+     log_files:
+       - main.log
+
+- hosts: javaprogram
+  roles:
+    - role: nginx
+      app_name: nginx-javaprogram
+      root: /opt/nginx-javaprogram
+      conf_type: http
+      conf_ssl: false
+      conf_name: javaprogram
+      conf_port: 80
+      conf_proxy:
+        - javaprogram:8090
+
+
+
+# rollback javaprogram
+
+- hosts: javaprogram
+  roles:
+    - role: javaprogram
+      root: "/opt/javaprogram"
+      version: "{{ app_tag }}"
+      template_files: []
+      copy_files: []

@@ -1,0 +1,15 @@
+# deploy main app server
+---
+
+- hosts: prometheus
+  roles:
+    - role: prometheus
+
+- hosts: prometheus
+  roles:
+    - node_exporter
+
+
+- hosts: grafana
+  roles:
+    - role: grafana
