@@ -1,0 +1,13 @@
+---
+# defaults file for deployment
+
+root: /opt/deployment
+src_root: ../../../..
+copy_dirs:
+  - playbooks
+  - prepare
+  - prod
+  - qa
+
+copy_files:
+  - ansible.cfg

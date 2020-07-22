@@ -1,0 +1,17 @@
+---
+# defaults file for admin
+
+app_name: admin
+image_name: registry:5000/javaprogram
+version: latest
+root: /opt/javaprogram
+
+directories:
+  - "{{root}}/{{ version }}/config"
+  - "{{root}}/log"
+
+template_files:
+  - application.yml
+
+copy_files:
+  - xxx.x

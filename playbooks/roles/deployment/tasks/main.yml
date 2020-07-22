@@ -1,0 +1,33 @@
+---
+# tasks file for deployment
+
+####################################
+
+- name: Create directories
+  file:
+    name: "{{ root }}/{{ item }}"
+    state: directory
+    mode: 0755
+  with_items: '{{ copy_dirs }}'
+  become: yes
+
+- name: copy directories
+  synchronize:
+    src: "{{ src_root }}/{{ item }}/"
+    dest: '{{ root }}/{{ item }}/'
+    dirs: yes
+  with_items: '{{ copy_dirs }}'
+  become: yes
+
+- name: copy files
+  copy:
+    src: "{{ src_root }}/{{ item }}"
+    dest: '{{ root }}/{{ item }}'
+  with_items: '{{ copy_files }}'
+  become: yes
+
+- name: copy ansible.cfg
+  template:
+    src: ansible.cfg.j2
+    dest: /etc/ansible/ansible.cfg
+  become: yes

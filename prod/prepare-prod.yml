@@ -1,0 +1,10 @@
+---
+
+- hosts: prod
+  roles:
+    - role: deployment
+      root: /opt/deployment
+      copy_dirs:
+        - playbooks
+        - prod
+
