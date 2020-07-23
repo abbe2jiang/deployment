@@ -1,0 +1,47 @@
+# test
+---
+
+- hosts: test
+  tasks:
+    - name: get public IP
+      ipify_facts:
+        timeout: 30
+      register: public_ip
+    - debug:
+          msg: "{{ipify_public_ip}}"
+#    - debug:
+#          msg: "{{item}}"
+#      with_items: "{{ groups['test'] }}"
+#
+#    - set_fact: version_number={{ version_number | int + 1 }}
+#
+#    - debug:
+#          msg: "{{version_number}}"
+#
+#    - set_fact: version_number={{ version_number | int + 1 }}
+#    - debug:
+#            msg: "{{version_number}}"
+
+
+    - name: test shell
+      shell: echo $PATH
+      register: result
+
+    - debug:
+         msg: "{{result}}"
+
+
+
+#- hosts: test
+#  tasks:
+#    - debug:
+#          msg: "{{version_number}}"
+#
+#    - set_fact: version_number={{ version_number | int + 1 }}
+#
+#    - debug:
+#          msg: "{{version_number}}"
+#
+#    - set_fact: version_number={{ version_number | int + 1 }}
+#    - debug:
+#            msg: "{{version_number}}"

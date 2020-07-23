@@ -1,0 +1,6 @@
+# deploy registry
+---
+
+- hosts: registry
+  roles:
+    - registry

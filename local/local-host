@@ -1,0 +1,10 @@
+[test]
+127.0.0.1
+
+[registry]
+127.0.0.1
+
+
+
+[all:vars]
+ansible_connection=local

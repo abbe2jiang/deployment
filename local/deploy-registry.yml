@@ -1,0 +1,7 @@
+# deploy registry
+---
+
+- hosts: registry
+  roles:
+    - role: registry
+      root: /Users/Shared/opt/registry
