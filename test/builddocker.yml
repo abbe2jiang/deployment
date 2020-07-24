@@ -10,6 +10,11 @@
           tag: latest
           push: yes
 
+        - name: rabbitmq
+          repository: registry:5000/rabbitmq
+          tag: latest
+          push: yes
+
         - name: nginx
           repository: registry:5000/nginx
           tag: latest

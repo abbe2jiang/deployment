@@ -4,6 +4,8 @@
 [registry]
 127.0.0.1
 
+[rabbitmq]
+127.0.0.1
 
 
 [all:vars]

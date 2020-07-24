@@ -1,0 +1,13 @@
+- hosts: registry
+  roles:
+    - role: builddocker
+      images_pull:
+        - name: rabbitmq
+          repository: registry:5000/rabbitmq
+          tag: latest
+          push: yes
+
+- hosts: rabbitmq
+  roles:
+    - role: rabbitmq
+      root: /Users/Shared/opt/rabbitmq

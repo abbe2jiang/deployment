@@ -1,10 +1,10 @@
 ---
-# tasks file for consul
-- name: pull consul image
+# tasks file for rabbitmq
+- name: pull  image
   docker_image:
     name: "{{ image_name }}"
     tag: "{{ version }}"
-    force: yes
+    force_source: yes
     state: present
   become: yes
 
@@ -41,16 +41,17 @@
   docker_container:
     name: "{{ app_name }}"
     image: "{{ image_name }}:{{ version }}"
-    volumes:
-      - '{{ root }}/data:/consul/data'
-      - '{{ root }}/config:/consul/config'
-      - '{{ root }}/log:/consul/log'
-    command: agent
-    network_mode: host
+    # volumes:
+    #   - '{{ root }}/data:/consul/data'
+    #   - '{{ root }}/config:/consul/config'
+    #   - '{{ root }}/log:/consul/log'
+    # network_mode: host
+    ports:
+      - "5672:5672"
     restart_policy: always
     state: started
     log_driver: json-file
     log_options:
       max-size: 100m
-      max-file: 2
+      max-file: "2"
   become: yes

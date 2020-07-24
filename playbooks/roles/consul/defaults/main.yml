@@ -1,5 +1,5 @@
 ---
-# defaults file for monitor
+# defaults file for consul
 
 app_name: consul
 image_name: registry:5000/consul

@@ -14,7 +14,9 @@
     image: "{{ image_name }}:{{ version }}"
     volumes:
       - '{{ root }}:/var/lib/registry'
-    network_mode: host
+    ports:
+      - "5000:5000"
+    # network_mode: host
     restart_policy: always
     recreate: yes
     log_driver: json-file

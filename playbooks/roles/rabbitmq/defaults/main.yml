@@ -1,0 +1,15 @@
+---
+# defaults file for rabbitmq
+
+app_name: rabbitmq
+image_name: registry:5000/rabbitmq
+version: latest
+root: /opt/rabbitmq
+
+# directories:
+#   - "{{root}}/config"
+#   - "{{root}}/data"
+#   - "{{root}}/log"
+
+# template_files:
+#   - consul.hcl
