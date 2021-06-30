@@ -1,0 +1,73 @@
+global:
+  scrape_interval: 30s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'blackbox-http-health-22'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]  # Look for a HTTP 200 response.
+    static_configs:
+      - targets:
+        - http://172.16.3.32:5222/health
+        labels:
+          region: region22
+          module: http
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 172.16.3.22:9115  # The blackbox exporter's real hostname:port.
+
+  - job_name: 'blackbox-tcp-22'
+    metrics_path: /probe
+    scrape_interval: 60s
+    params:
+      module: [tcp_connect]  # Look for a HTTP 200 response.
+    static_configs:
+      - targets:
+        - 34.102.200.122:443
+        - 34.102.158.191:443
+        - 35.190.116.107:443
+        labels:
+          region: region22
+          module: tcp
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 172.16.3.22:9115
+
+  - job_name: 'blackbox-icmp-22'
+    metrics_path: /probe
+    scrape_interval: 60s
+    params:
+      module: [icmp]
+    static_configs:
+      - targets:
+        - api.smelly.rocks
+        - api.stinky.rocks
+        - 35.190.60.139
+        - 34.117.218.177
+        - 34.117.252.245
+        - 34.102.200.122
+        - 34.102.158.191
+        - 35.190.116.107
+        labels:
+          region: region22
+          module: icmp
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 172.16.3.22:9115

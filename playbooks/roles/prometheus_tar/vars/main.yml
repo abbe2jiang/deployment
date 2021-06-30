@@ -1,0 +1,5 @@
+---
+serviceName: prometheus
+root: /opt/prometheus
+exec_command: "{{root}}/prometheus --config.file={{root}}/prometheus.yml --storage.tsdb.retention=30d"
+version: 2.28.0
